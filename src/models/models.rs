@@ -38,7 +38,7 @@ pub struct ErrorResponse {
     pub error: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Deserialize)]
 pub struct LoginUser {
     pub email: String,
     pub password: String,

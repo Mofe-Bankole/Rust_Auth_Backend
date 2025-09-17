@@ -1,6 +1,7 @@
 use crate::models::models::ErrorResponse;
 use crate::models::models::*;
 use axum::{
+    debug_handler,
     extract::{Extension, Json},
     http::StatusCode,
 };
@@ -8,7 +9,6 @@ use bcrypt::{hash, verify};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{Algorithm, EncodingKey, Header, encode};
 use sqlx::{Error, PgPool, Row, postgres::PgRow};
-
 // Helper function to convert PgRow to User
 fn row_to_user(row: PgRow) -> User {
     User {
@@ -20,7 +20,7 @@ fn row_to_user(row: PgRow) -> User {
         updated_at: row.get("updated_at"),
     }
 }
-fn error_re
+
 pub async fn sign_up_user(
     pool: &PgPool,
     user: &CreateUser,
@@ -32,7 +32,7 @@ pub async fn sign_up_user(
         .await?;
 
     if existing_user.is_some() {
-        return Err("User already exists".into());
+        return Err("User Already Exists".into());
     }
 
     // Hash password
@@ -68,7 +68,7 @@ pub async fn register_user(
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
-                error: "Failed to generate token".to_string(),
+                error: "Failed To Generate Token".to_string(),
             }),
         )
     })?;
@@ -94,6 +94,7 @@ pub async fn login_user(pool: &PgPool, user: &LoginUser) -> Result<User, sqlx::E
     }
 }
 
+#[debug_handler]
 pub async fn sign_in_user(
     Extension(pool): Extension<PgPool>,
     Json(payload): Json<LoginUser>,
